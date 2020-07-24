@@ -10,7 +10,7 @@ const url=process.env.MODE==='dev' ? process.env.LOCAL_DB : process.env.DB_URL;
 
 mongoose.connect(url,connectionParams)
     .then( () => {
-        console.log('Connected to database ')
+        console.log('Connected to database\n',url)
     })
     .catch( (err) => {
         console.error(`Error connecting to the database. \n${err}`);

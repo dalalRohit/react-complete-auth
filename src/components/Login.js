@@ -1,65 +1,115 @@
-import React, { useState } from "react";
-import axios from "axios";
-
-import { useFormik } from "formik";
+import React, { useEffect } from "react";
+import { Redirect } from "react-router-dom";
+import { connect } from "react-redux";
+import * as Yup from "yup";
+import { Formik, ErrorMessage } from "formik";
 import { TextField, Button } from "@material-ui/core";
-import { withRouter } from "react-router";
 
+import Layout from "./layout/Layout";
+import { login, clearFlash } from "./../store/actions/type";
+import Flash from "./flash";
+import Spinner from "./Spinner";
+
+const schema = Yup.object().shape({
+  username: Yup.string().required("Username is Required"),
+  password: Yup.string()
+    .min(6, "Minimum 6 chars")
+    .required("Password is Required"),
+});
+
+//Actions
 const Login = (props) => {
-  const [process, setProcess] = useState(false);
-  let formik = useFormik({
-    initialValues: {
-      username: "",
-      password: "",
-    },
-    onSubmit: (values) => {
-      //   alert(JSON.stringify(values, null, 2));
-      setProcess(true);
-      axios
-        .post("http://localhost:5000/login", {
-          username: values.username,
-          password: values.password,
-        })
-        .then((res) => {
-          alert(`Login ${JSON.stringify(res.data)}`);
-          window.localStorage.setItem("token", res.headers["auth-token"]);
-          setProcess(false);
-          props.history.push(`/post/${res.data.user}`);
-        })
-        .catch((err) => {
-          console.log(err);
-          setProcess(false);
-        });
-    },
-  });
+  useEffect(() => {
+    if (props.flash.page !== "login" && props.flash.msg !== "") {
+      props.clearFlash();
+    }
+  }, []);
+
+  const { flash } = props;
+  const data = [
+    { id: 12432, name: "username", type: "text" },
+    { id: 182, name: "password", type: "password" },
+  ];
+
+  if (props.auth) {
+    return <Redirect to="/dashboard" />;
+  }
   return (
-    <form className="form" autoComplete="off" onSubmit={formik.handleSubmit}>
-      <TextField
-        id="username"
-        type="text"
-        label="Username"
-        autoComplete="none"
-        onChange={formik.handleChange}
-        value={formik.values.username}
-      />
-      <TextField
-        id="password"
-        type="password"
-        label="Password"
-        autoComplete="on"
-        onChange={formik.handleChange}
-        value={formik.values.password}
-      />
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        disabled={process}
+    <Layout>
+      <h2>Login User</h2>
+      {flash.msg ? <Flash type={flash.type} text={flash.msg} /> : null}
+      <Formik
+        initialValues={{
+          username: "",
+          password: "",
+        }}
+        validationSchema={schema}
+        onSubmit={(values) => {
+          props.login(values);
+        }}
       >
-        Login
-      </Button>
-    </form>
+        {(formProps) => {
+          const { errors } = formProps;
+          const { loading } = props;
+
+          return !loading ? (
+            <form className="form" onSubmit={formProps.handleSubmit}>
+              {data.map(({ name, type, id }) => {
+                return (
+                  <div className="field" key={id}>
+                    <TextField
+                      id={name}
+                      type={type}
+                      label={name.toUpperCase()}
+                      onBlur={formProps.handleBlur}
+                      autoComplete="none"
+                      onChange={formProps.handleChange}
+                      value={formProps.values[name]}
+                    />
+                    <ErrorMessage
+                      name={name}
+                      render={(msg) => (
+                        <span className="field-error">{msg}</span>
+                      )}
+                    />
+                  </div>
+                );
+              })}
+
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={Object.keys(errors).length === 0 ? false : true}
+                onClick={formProps.handleSubmit}
+              >
+                Login
+              </Button>
+            </form>
+          ) : (
+            <Spinner />
+          );
+        }}
+      </Formik>
+    </Layout>
   );
 };
 
-export default withRouter(Login);
+const mapStateToProps = (state) => {
+  return {
+    auth: state.auth.auth,
+    token: state.auth.token,
+    loading: state.auth.loading,
+    user: state.auth.user,
+    flash: state.flash,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    login: (values) => dispatch(login(values)),
+    clearFlash: () => dispatch(clearFlash()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

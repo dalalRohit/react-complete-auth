@@ -1,35 +1,41 @@
 import React from "react";
-import { withRouter, Switch } from "react-router-dom";
-import Header from "./components/Header";
+import { Switch, Route } from "react-router-dom";
+
 import Login from "./components/Login";
 import Signup from "./components/Signup";
+import Dash from "./components/Dash";
+import Info from "./components/Info";
+// import Demo from "./components/Demo";
+import Logout from "./components/Logout";
 
-import { useParams, Route, NavLink } from "react-router-dom";
-
-// function Child() {
-//   let { id } = useParams();
-//   return <h1>{id}</h1>;
-// }
-
-function App(props) {
+function App() {
   return (
-    <div className="App">
-      <Header />
-      <main>
-        <h2>Complete user auth {props.location.pathname} </h2>
+    <Switch>
+      <Route path="/dashboard" exact>
+        <Dash />
+      </Route>
 
-        <Switch>
-          <Route path="/login" exact>
-            <Login />
-          </Route>
+      <Route path="/login" exact>
+        <Login />
+      </Route>
 
-          <Route path="/register" exact>
-            <Signup />
-          </Route>
-        </Switch>
-      </main>
-    </div>
+      <Route path="/register" exact>
+        <Signup />
+      </Route>
+
+      <Route path="/logout" exact>
+        <Logout total={false} />
+      </Route>
+
+      <Route path="/logoutall" exact>
+        <Logout total={true} />
+      </Route>
+
+      <Route path="/">
+        <Info />
+      </Route>
+    </Switch>
   );
 }
 
-export default withRouter(App);
+export default App;

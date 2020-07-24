@@ -4,6 +4,7 @@ const auth = require("./../utils/auth");
 const User = require("./../models/userModel");
 var bcrypt = require("bcryptjs");
 const { regValidation, loginValidation } = require("./../utils/validation");
+const _ = require("lodash");
 
 //POST /register
 router.post("/register", (req, res, next) => {
@@ -12,7 +13,7 @@ router.post("/register", (req, res, next) => {
   //validate the uesr
   const { error } = regValidation(req.body);
   if (error) {
-    return res.status(400).send({ error: error.details[0].message });
+    return res.status(400).json({ msg: error.details[0].message });
   }
 
   User.findOne({ username })
@@ -20,10 +21,12 @@ router.post("/register", (req, res, next) => {
       //If User found
       if (user) {
         if (user.email === email)
-          return res.send({
+          return res.status(400).json({
+            register: false,
             msg: `User with email ${email} and username ${username} already exists.`,
           });
-        return res.send({
+        return res.status(400).send({
+          register: false,
           msg: `User with username ${username} already exists!`,
         });
       } else {
@@ -49,7 +52,7 @@ router.post("/register", (req, res, next) => {
               res.status(400).send(err);
             }
 
-            return res.status(201).send({ newUser });
+            return res.status(201).send({ register: true, user: newUser._id });
           });
         });
       }
@@ -70,22 +73,49 @@ router.post("/login", (req, res, next) => {
 
   User.findOne({ username }).then(async (user) => {
     if (!user) {
-      return res.send({ error: `User not found!` });
+      return res
+        .status(400)
+        .json({ login: false, msg: `User not found! Check credentials.` });
     }
 
     const isPass = await bcrypt.compare(password, user.password);
     if (!isPass) {
-      return res.status(400).send({ error: "Passwords do not match!" });
+      return res
+        .status(400)
+        .json({ login: false, msg: "Password is not right!" });
     }
     const token = await user.generateAuthToken();
 
     res.header("auth-token", token);
-    
-    res.send({
-      msg: "login",
-      user:user['_id'],
+    res.cookie("auth-token", token, { maxAge: 36000, httpOnly: true });
+    res.cookie("userId", user["_id"], { maxAge: 36000, httpOnly: true });
+
+    res.status(201).send({
+      login: true,
+      user: user["_id"],
     });
   });
+});
+
+//GET all users
+router.get("/users", (req, res) => {
+  User.find({}).then((users) => {
+    res.json(users);
+  });
+});
+
+//GET user with ?id
+router.post("/user/:id", (req, res) => {
+  let { id } = req.params;
+  User.findById({ _id: id })
+    .then((user) => {
+      if (user) {
+        return res.json({ user: _.pick(user, ["_id", "username"]) });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ msg: "User not found" });
+    });
 });
 
 //Sample protected route
@@ -117,6 +147,21 @@ router.get("/logoutall", auth, async (req, res) => {
     res.status(200).send("LogoutAll");
   } catch (err) {
     res.status(500).send(err);
+  }
+});
+
+router.get("/check", async (req, res) => {
+  let token = req.header("auth-token");
+  if (!token) {
+    return res.status(403).json({ msg: "Access denied" });
+  }
+  const user = await User.findOne({
+    "tokens.token": token,
+  });
+  if (user) {
+    return res.status(200).json({ user: true, id: user._id });
+  } else {
+    return res.status(403).json({ user: false });
   }
 });
 

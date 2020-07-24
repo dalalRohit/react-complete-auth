@@ -1,26 +1,38 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { Component } from "react";
+import { Link,NavLink, withRouter } from "react-router-dom";
 
-const Header = () => {
-  return (
-    <header className="header">
-      <h2>Sample App</h2>
+class Header extends Component {
+  render() {
+    const links = ["Info", "Login", "Register"];
+    const authLinks = ["Dashboard", "Logout", "Logout All"];
 
-      <ul className="nav">
-        <li>
-          <NavLink to="/login" exact>
-            Login
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/register" exact>
-            Register
-          </NavLink>
-        </li>
-      </ul>
-      
-    </header>
-  );
-};
+    return (
+      <header className="header">
+        <Link to={this.props.auth ? "/dashboard" : "/"}>UserAuth</Link>
 
-export default Header;
+        <ul className="nav">
+          {!this.props.auth
+            ? links.map((link) => {
+                return (
+                  <NavLink key={Math.random()} to={`/${link.toLowerCase()}`}>
+                    <li>{link}</li>
+                  </NavLink>
+                );
+              })
+            : authLinks.map((authLink) => {
+                return (
+                  <NavLink
+                    key={Math.random()}
+                    to={`/${authLink.toLowerCase().replace(/\s/g, "")}`} //removes white space from "logout all" -> "logoutall"
+                  >
+                    <li>{authLink}</li>
+                  </NavLink>
+                );
+              })}
+        </ul>
+      </header>
+    );
+  }
+}
+
+export default withRouter(Header);
