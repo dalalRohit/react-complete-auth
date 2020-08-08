@@ -2,6 +2,8 @@
 
 *.env
 .vscode
+/src/store/reducers/results.js
+/src/store/reducers/counter.js
 
 # dependencies
 *node_modules

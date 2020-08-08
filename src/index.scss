@@ -48,6 +48,15 @@ a.active {
   max-height: 8vh;
 }
 
+.logo,
+.forgot {
+  border-bottom: 3px solid plum;
+
+  &:hover {
+    border-bottom: 3px solid lightcoral;
+  }
+}
+
 //ul
 .nav {
   display: flex;

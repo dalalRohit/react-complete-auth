@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import * as Yup from "yup";
 import { Formik, ErrorMessage } from "formik";
 import { TextField, Button } from "@material-ui/core";
 
 import Layout from "./layout/Layout";
-import { login, clearFlash } from "./../store/actions/type";
+import { login, clearFlash } from "./../store/actions/creators";
 import Flash from "./flash";
 import Spinner from "./Spinner";
 
@@ -32,6 +32,8 @@ const Login = (props) => {
   ];
 
   if (props.auth) {
+    // alert("login");
+    console.log("redirecting to /dash");
     return <Redirect to="/dashboard" />;
   }
   return (
@@ -91,14 +93,17 @@ const Login = (props) => {
           );
         }}
       </Formik>
+      <Link className="forgot" to="/forgot">
+        Forgot Password?
+      </Link>
     </Layout>
   );
 };
 
 const mapStateToProps = (state) => {
+  console.log("[login] STATE", state.auth);
   return {
     auth: state.auth.auth,
-    token: state.auth.token,
     loading: state.auth.loading,
     user: state.auth.user,
     flash: state.flash,

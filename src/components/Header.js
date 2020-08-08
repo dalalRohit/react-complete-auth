@@ -1,14 +1,16 @@
 import React, { Component } from "react";
-import { Link,NavLink, withRouter } from "react-router-dom";
+import { Link, NavLink, withRouter } from "react-router-dom";
 
 class Header extends Component {
   render() {
-    const links = ["Info", "Login", "Register"];
+    const links = ["Login", "Register"];
     const authLinks = ["Dashboard", "Logout", "Logout All"];
 
     return (
       <header className="header">
-        <Link to={this.props.auth ? "/dashboard" : "/"}>UserAuth</Link>
+        <Link className="logo" to={this.props.auth ? "/dashboard" : "/"}>
+          <h2>UserAuth</h2>
+        </Link>
 
         <ul className="nav">
           {!this.props.auth

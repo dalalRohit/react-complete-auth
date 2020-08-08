@@ -7,7 +7,7 @@ import { TextField, Button } from "@material-ui/core";
 
 import Layout from "./layout/Layout";
 
-import { register, clearFlash } from "./../store/actions/type";
+import { register, clearFlash } from "./../store/actions/creators";
 import Flash from "./flash";
 import Spinner from "./Spinner";
 

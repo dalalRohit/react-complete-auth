@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import Layout from "./Layout";
 import { connect } from "react-redux";
-import { ADD_5, MUL_5, STORE_RES, DEL_RES,storeRes } from "./../store/actions/type";
+import {
+  ADD_5,
+  MUL_5,
+  STORE_RES,
+  DEL_RES,
+  storeRes,
+} from "./../store/actions/creators";
 class Demo extends Component {
   render() {
     const ctr = this.props.ctr.counter;
@@ -45,7 +51,7 @@ const mapDispatchToProps = (dispatch) => {
     add5: () => dispatch({ type: ADD_5 }),
     mul5: () => dispatch({ type: MUL_5 }),
     // store: (val) =>
-      // dispatch({ type: STORE_RES, data: { val, id: Math.random() } }),
+    // dispatch({ type: STORE_RES, data: { val, id: Math.random() } }),
 
     //async action creator which calls sync action to take over
     store: (val) => dispatch(storeRes(val)),

@@ -7,12 +7,16 @@ import Dash from "./components/Dash";
 import Info from "./components/Info";
 // import Demo from "./components/Demo";
 import Logout from "./components/Logout";
+import Forgot from "./components/forgot";
 
 function App() {
   return (
     <Switch>
       <Route path="/dashboard" exact>
         <Dash />
+      </Route>
+      <Route path="/forgot" exact>
+        <Forgot />
       </Route>
 
       <Route path="/login" exact>
@@ -31,7 +35,7 @@ function App() {
         <Logout total={true} />
       </Route>
 
-      <Route path="/">
+      <Route path="/" exact>
         <Info />
       </Route>
     </Switch>

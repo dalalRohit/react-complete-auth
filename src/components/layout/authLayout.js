@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Header from "../Header";
 import { connect } from "react-redux";
-import { chechAuth } from "../../store/actions/type";
+import { checkAuth } from "../../store/actions/creators";
 import { Redirect } from "react-router";
 
 function AuthLayout(props) {
@@ -10,27 +10,37 @@ function AuthLayout(props) {
       props.checkAuth();
     }
   }, []);
-
-  return props.isAuth ? (
+  if (!props.isAuth) {
+    console.log("[authLayout] redirecting to /login");
+    return <Redirect to="/login" />;
+  }
+  return (
     <div className="App">
       <Header auth={props.isAuth} />
       <main>{props.children}</main>
     </div>
-  ) : (
-    <Redirect to="/login" />
   );
 }
+/*
+    <div className="App">
+      <Header auth={props.isAuth} />
+      <main>{props.children}</main>
+    </div>
+*/
 
 const mapStateToProps = (state) => {
+  console.log("[authLayout] STATE", state.auth);
   return {
-    isAuth: state.auth.auth === true,
+    isAuth: state.auth.auth,
     user: state.auth.user,
+    loading: state.auth.loading,
+    checked: state.auth.checked,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    checkAuth: () => dispatch(chechAuth()),
+    checkAuth: () => dispatch(checkAuth()),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(AuthLayout);

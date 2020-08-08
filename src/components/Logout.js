@@ -1,15 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router";
-import { logout } from "./../store/actions/type";
+import { logout } from "./../store/actions/creators";
 
 class Logout extends Component {
   componentDidMount() {
+    console.log("[logout] logging out..");
     this.props.logout(this.props.total);
   }
 
   render() {
-    return <Redirect to="/login" />;
+    return <Redirect to="/login?x=shraddha" />;
   }
 }
 
@@ -18,4 +19,4 @@ const mapDispatchToProps = (dispatch) => {
     logout: (total) => dispatch(logout(total)),
   };
 };
-export default connect(null,mapDispatchToProps)(Logout);
+export default connect(null, mapDispatchToProps)(Logout);
