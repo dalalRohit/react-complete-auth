@@ -5,7 +5,6 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Dash from "./components/Dash";
 import Info from "./components/Info";
-// import Demo from "./components/Demo";
 import Logout from "./components/Logout";
 import Forgot from "./components/forgot";
 
