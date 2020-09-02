@@ -2,9 +2,7 @@ import React from "react";
 
 import * as Yup from "yup";
 import { TextField, Button } from "@material-ui/core";
-import { connect } from "react-redux";
 import { Formik, ErrorMessage } from "formik";
-import { changePassword, clearFlash } from "./../store/actions/creators";
 
 const schema = Yup.object().shape({
   password: Yup.string().required("Password is Required"),

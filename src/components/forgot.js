@@ -5,8 +5,8 @@ import { connect } from "react-redux";
 import axios from "axios";
 import Change from "./change";
 import Spinner from "./Spinner";
-import Flash from "./flash";
-import { changePassword } from "./../store/actions/creators";
+import { forgotPassword } from "./../store/actions/creators";
+import { Redirect } from "react-router-dom";
 function Forgot(props) {
   const [state, setState] = useState({
     username: "",
@@ -44,6 +44,10 @@ function Forgot(props) {
         alert("Username does not exists");
       });
   };
+
+  if (props.isReset) {
+    return <Redirect to="/login" />;
+  }
   return (
     <Layout>
       <form className="form" onSubmit={(event) => checkUser(event)}>
@@ -70,20 +74,24 @@ function Forgot(props) {
           <hr />
           <h3>Username exists!</h3>
           <Change
-            change={(values) =>
-              props.changePassword({ id: state.id, ...values })
-            }
+            change={(values) => {
+              props.forgotPassword({ id: state.id, ...values }, true);
+            }}
           />
         </>
       ) : null}
     </Layout>
   );
 }
-const mapStateToProps = (state) => {};
 
-const mapDispatchToProps = (dispatch) => {
+const mapStateToProps = (state) => {
   return {
-    changePassword: (values) => dispatch(changePassword(values)),
+    isReset: state.auth.reset,
   };
 };
-export default connect(null, mapDispatchToProps)(Forgot);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    forgotPassword: (values) => dispatch(forgotPassword(values)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Forgot);

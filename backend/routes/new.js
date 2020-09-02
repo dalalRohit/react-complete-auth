@@ -98,12 +98,19 @@ router.post("/login", (req, res, next) => {
     /*
      Send auth-token as a response header to your front-end.
     */
+    const cookieOpts = {
+      maxAge: 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: true,
+    };
     res.header("auth-token", token);
+    res.cookie("auth-token", token, cookieOpts);
+    res.cookie("userId", JSON.stringify(user["_id"]), cookieOpts);
 
-    res.status(201).send({
+    return res.status(201).send({
       login: true,
       user: user["_id"],
-      token,
     });
   });
 });
@@ -162,7 +169,11 @@ router.get("/logout", auth, async (req, res) => {
     });
 
     await req.user.save();
-    res.status(200).json({ logout: true });
+
+    res.clearCookie("userId");
+    res.clearCookie("auth-token");
+
+    return res.status(200).json({ logout: true });
   } catch (err) {}
 });
 
@@ -219,6 +230,37 @@ router.put("/update/:id", auth, (req, res, next) => {
     return res
       .status(400)
       .send({ update: false, msg: "New password should match" });
+  }
+  User.findById({ _id: id })
+    .then(async (user) => {
+      if (user) {
+        user.password = await hashPassword(new_password);
+        await user.save();
+
+        return res
+          .status(200)
+          .json({ update: true, msg: "Password updated successfully" });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ update: false, msg: "No user found" });
+    });
+});
+
+/*
+  @PUT /forgot
+  @params:
+    User ID to update its password
+    { new_password, new_password_confirm } as JSON
+  @desc: Change forgot password of user with _id:id
+*/
+router.put("/forgot/:id", (req, res, next) => {
+  const { id } = req.params;
+  const { new_password, new_password_confirm } = req.body;
+  if (new_password !== new_password_confirm) {
+    return res
+      .status(400)
+      .json({ update: false, msg: "New password should match" });
   }
   User.findById({ _id: id })
     .then(async (user) => {

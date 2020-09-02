@@ -3,7 +3,7 @@ import { FLASH, CLEAR_FLASH } from "../actions/type";
 const initState = {
   type: "",
   msg: "",
-  page:"" //page describes "route" to which the flash message is intented/meant for.
+  page: "", //page describes "route" to which the flash message is intented/meant for.
 };
 
 export const flashReducer = (state = initState, action) => {
@@ -12,13 +12,13 @@ export const flashReducer = (state = initState, action) => {
       return {
         type: action.flash,
         msg: action.data,
-        page:action.page
+        page: action.page,
       };
     case CLEAR_FLASH:
       return {
         type: "",
         msg: "",
-        page:""
+        page: "",
       };
     default:
       return state;

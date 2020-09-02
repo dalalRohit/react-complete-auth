@@ -30,11 +30,8 @@ const Login = (props) => {
     { id: 12432, name: "username", type: "text" },
     { id: 182, name: "password", type: "password" },
   ];
-
   if (props.auth) {
-    // alert("login");
-    console.log("redirecting to /dash");
-    return <Redirect to="/dashboard" />;
+    return <Redirect to='/dashboard' />
   }
   return (
     <Layout>
@@ -77,7 +74,6 @@ const Login = (props) => {
                   </div>
                 );
               })}
-
               <Button
                 type="submit"
                 variant="contained"
@@ -87,15 +83,19 @@ const Login = (props) => {
               >
                 Login
               </Button>
+              <Link className="forgot" to="/forgot">
+                Forgot Password?
+              </Link>
+              <br />
+              <Link className="forgot" to="/register">
+                Register here
+              </Link>
             </form>
           ) : (
             <Spinner />
           );
         }}
       </Formik>
-      <Link className="forgot" to="/forgot">
-        Forgot Password?
-      </Link>
     </Layout>
   );
 };

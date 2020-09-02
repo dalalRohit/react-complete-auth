@@ -87,8 +87,6 @@ router.post("/login", (req, res, next) => {
     const token = await user.generateAuthToken();
 
     res.header("auth-token", token);
-    res.cookie("auth-token", token, { maxAge: 36000, httpOnly: true });
-    res.cookie("userId", user["_id"], { maxAge: 36000, httpOnly: true });
 
     res.status(201).send({
       login: true,

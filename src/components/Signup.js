@@ -38,6 +38,7 @@ const Signup = (props) => {
     { id: 12, name: "password2", type: "password" },
   ];
   const { flash } = props;
+
   if (props.isRegister) {
     return <Redirect to="/login" />;
   }

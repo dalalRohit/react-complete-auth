@@ -31,12 +31,15 @@ export const REGISTER_FALSE = "REGISTER_FALSE";
 export const LOGIN_TRUE = "LOGIN_TRUE";
 export const LOGIN_FALSE = "LOGIN_FALSE";
 
+export const RESET_TRUE = "RESET_TRUE";
+export const RESET_FALSE = "RESET_FALSE";
+
 export const LOGOUT = "LOGOUT";
 
 export const AUTH_START = "AUTH_START";
-export const CHECK_AUTH = "CHECK_AUTH";
-export const AUTH_FAIL = "AUTH_FAIL";
+export const AUTH_FALSE = "AUTH_FAIL";
 export const AUTH_TRUE = "AUTH_TRUE";
+
 export const USER_CHECKED = "USER_CHECKED";
 
 // flash actions

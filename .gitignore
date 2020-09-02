@@ -4,6 +4,8 @@
 .vscode
 /src/store/reducers/results.js
 /src/store/reducers/counter.js
+/backend/localhost.pem
+/backend/localhost-key.pem
 
 # dependencies
 *node_modules

@@ -1,12 +1,15 @@
 import * as actions from "./type";
 import axios from "axios";
-import { getToken, removeUserData, setToken } from "./../helper";
+import { getToken } from "./../helper";
+
+//CLEARFLASH ACTION CREATOR
 export const clearFlash = () => {
   return {
     type: actions.CLEAR_FLASH,
   };
 };
 
+// REGISTER ACTION CREATOR
 export const register = (data) => (dispatch) => {
   dispatch({ type: actions.AUTH_START });
 
@@ -32,6 +35,7 @@ export const register = (data) => (dispatch) => {
     });
 };
 
+// LOGIN ACTION CREATOR
 export const login = (data) => (dispatch) => {
   dispatch({ type: actions.AUTH_START });
 
@@ -43,6 +47,7 @@ export const login = (data) => (dispatch) => {
         token: res.headers["auth-token"],
       };
       dispatch({ type: actions.LOGIN_TRUE, data });
+      console.log("[loginC] logged in..");
     })
     .catch((err) => {
       /*{data: {…}, status: 400, statusText: "Bad Request", headers: {…}, config: {…}, …} */
@@ -56,6 +61,7 @@ export const login = (data) => (dispatch) => {
     });
 };
 
+// LOGOUT ACTION CREATOR
 export const logout = (total) => (dispatch) => {
   const token = getToken();
 
@@ -77,57 +83,17 @@ export const logout = (total) => (dispatch) => {
       });
     })
     .catch((err) => {
-      dispatch({ type: actions.AUTH_FAIL });
+      dispatch({ type: actions.AUTH_FALSE });
     });
 };
 
-export const checkAuth = () => (dispatch) => {
-  dispatch({ type: actions.AUTH_START });
-  const token = getToken();
-
-  if (!token) {
-    dispatch({ type: actions.AUTH_FAIL });
-    return dispatch({
-      type: actions.FLASH,
-      flash: "danger",
-      data: "You are not logged in! Login please",
-      page: "login",
-    });
-  } else {
-    let headers = {
-      "auth-token": token,
-    };
-
-    axios
-      .get("/check", { headers })
-      .then((res) => {
-        if (res.data.user) {
-          dispatch({
-            type: actions.USER_CHECKED,
-            user: res.data.id,
-            token,
-          });
-        }
-      })
-      .catch(() => {
-        dispatch({ type: actions.AUTH_FAIL });
-
-        dispatch({
-          type: actions.FLASH,
-          flash: "danger",
-          data: "You are logged out. Invalid Token",
-          page: "login",
-        });
-      });
-  }
-};
-
-export const changePassword = (values, withToken) => (dispatch, getState) => {
+// CHANGEPASSWORD ACTION CREATOR
+export const changePassword = (values) => (dispatch, getState) => {
   const token = getToken();
 
   const {
     auth: { user },
-  } = getState() || values.id;
+  } = getState();
   const data = {
     new_password: values.password,
     new_password_confirm: values.password_again,
@@ -146,10 +112,39 @@ export const changePassword = (values, withToken) => (dispatch, getState) => {
       });
     })
     .catch((err) => {
-      dispatch({ type: actions.AUTH_FAIL });
+      dispatch({ type: actions.AUTH_FALSE });
     });
 
   return {};
 };
 
-export const forgotPassword = () => (dispatch) => {};
+//FORGOTPASSWORD ACTION CREATOR
+export const forgotPassword = (values) => (dispatch) => {
+  const data = {
+    new_password: values.password,
+    new_password_confirm: values.password_again,
+  };
+  const id = values.id;
+  dispatch({ type: actions.AUTH_START });
+  axios
+    .put(`/forgot/${id}`, data)
+    .then((res) => {
+      console.log(res);
+      dispatch({ type: actions.RESET_TRUE });
+      dispatch({
+        type: actions.FLASH,
+        flash: "success",
+        data: "Password reset succesfull!",
+        page: "login",
+      });
+    })
+    .catch((err) => {
+      dispatch({ type: actions.RESET_FALSE });
+      dispatch({
+        type: actions.FLASH,
+        flash: "danger",
+        data: "Password reset unsuccesfull!",
+        page: "forgot",
+      });
+    });
+};

@@ -20,7 +20,7 @@ var corsOptions = {
   exposedHeaders: "auth-token",
 };
 
-// app.use(express.cookieParser());
+app.use(cookieParser());
 
 app.use(cors(corsOptions));
 
